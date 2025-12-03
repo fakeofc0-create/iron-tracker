@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ironing Tracker</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Modern, Elegant Color Palette */
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --primary-color: #4f46e5;
+            --accent-color: #818cf8;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --danger: #ef4444;
+            --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--bg-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+        }
+
+        /* --- Header Section --- */
+        .app-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 30px 24px 60px 24px;
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
+        .app-subtitle { font-size: 0.85rem; opacity: 0.9; font-weight: 400; margin-top: 2px; }
+
+        .header-icon {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            padding: 0 20px;
+            margin-top: -40px; /* Overlap header */
+            flex: 1;
+            padding-bottom: 40px;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* --- Input Styles --- */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid transparent;
+            background-color: #f3f4f6;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* BIG Amount Input with Left Symbol */
+        .amount-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .amount-symbol {
+            position: absolute;
+            left: 20px; /* Fixed to the left */
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        #entry-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            padding: 15px 15px 15px 40px; /* Extra padding left for symbol */
+            height: 80px;
+            color: var(--primary-color);
+            background: #f0fdf4;
+            border: 1px solid #dcfce7;
+        }
+        #entry-amount::placeholder { color: #cbd5e1; }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+            transition: transform 0.1s ease;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Success Message Area */
+        .success-message {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-out;
+            border: 1px solid #a7f3d0;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Month Glass Box --- */
+        .glass-box-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .glass-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .month-selector {
+            border: none;
+            background: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            text-align-last: center;
+        }
+
+        /* --- Total Display (NEW BOX STYLE) --- */
+        .total-container {
+            background: var(--card-bg); /* White background */
+            border-radius: 24px;       /* Rounded corners */
+            padding: 24px;             /* Spacing inside */
+            margin-bottom: 20px;       /* Spacing outside */
+            box-shadow: var(--shadow-soft); /* Shadow like the input card */
+            text-align: center;
+        }
+        
+        .total-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 5px; }
+        .total-amount { font-size: 3rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .entry-pill { display: inline-block; background: #e0e7ff; color: var(--primary-color); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 10px; }
+
+        /* --- History List --- */
+        .history-list { margin-top: 10px; }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        .date-badge {
+            background: #f3f4f6;
+            color: var(--text-dark);
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        .date-badge span { font-size: 0.65rem; font-weight: 500; text-transform: uppercase; color: var(--text-light); }
+
+        .item-details { flex: 1; }
+        .item-amount { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+        .item-weekday { font-size: 0.8rem; color: var(--text-light); }
+
+        .delete-btn {
+            background: #fee2e2;
+            border: none;
+            color: var(--danger);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
+        .empty-state i { font-size: 3rem; margin-bottom: 10px; opacity: 0.3; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px); z-index: 100; display: none; justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 24px;
+            text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-modal { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-cancel { background: #f3f4f6; color: var(--text-dark); }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <header class="app-header">
+        <div class="header-top">
+            <div>
+                <h1 class="app-title">Ironing Tracker</h1>
+                <p class="app-subtitle">Daily Expense Log</p>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-tshirt"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        
+        <div class="card" style="margin-top: -30px;">
+            <form id="record-form">
+                <div class="input-group">
+                    <label class="input-label">DATE</label>
+                    <input type="date" id="entry-date" class="custom-input" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">AMOUNT</label>
+                    <div class="amount-wrapper">
+                        <span class="amount-symbol">₹</span>
+                        <input type="number" id="entry-amount" class="custom-input" placeholder="0" inputmode="numeric" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="save-btn">
+                    Enter Record
+                </button>
+
+                <div id="success-msg" class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="success-text">Success!</span>
+                </div>
+            </form>
+        </div>
+
+        <div class="glass-box-container">
+            <div class="glass-box">
+                <i class="fas fa-calendar-alt" style="color: var(--primary-color);"></i>
+                <select id="month-select" class="month-selector"></select>
+                <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: var(--primary-color);"></i>
+            </div>
+        </div>
+
+        <div class="total-container">
+            <div class="total-label">Total to Pay</div>
+            <div class="total-amount">₹<span id="monthly-total">0</span></div>
+            <div class="entry-pill"><span id="entry-count">0</span> Entries</div>
+        </div>
+
+        <div>
+            <div id="history-list" class="history-list"></div>
+            
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fas fa-clipboard-check"></i>
+                <p>No entries yet for this month.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="delete-modal" class="modal-overlay">
+    <div class="modal-box">
+        <i class="fas fa-trash-alt" style="font-size: 2rem; color: var(--danger); margin-bottom: 15px;"></i>
+        <h3 style="margin: 0; color: var(--text-dark);">Delete?</h3>
+        <p style="color: var(--text-light); font-size: 0.9rem; margin: 10px 0;">Remove this record permanently?</p>
+        <div class="modal-actions">
+            <button class="btn-modal btn-cancel" id="cancel-delete">No</button>
+            <button class="btn-modal btn-danger" id="confirm-delete">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- APP LOGIC (Vanilla JS) ---
+    const STORAGE_KEY = 'ironingTrackerV5';
+    let logs = [];
+    let deleteId = null;
+
+    // DOM Elements
+    const form = document.getElementById('record-form');
+    const dateInput = document.getElementById('entry-date');
+    const amountInput = document.getElementById('entry-amount');
+    const monthSelect = document.getElementById('month-select');
+    const historyList = document.getElementById('history-list');
+    const totalEl = document.getElementById('monthly-total');
+    const countEl = document.getElementById('entry-count');
+    const emptyState = document.getElementById('empty-state');
+    const successMsg = document.getElementById('success-msg');
+    const successText = document.getElementById('success-text');
+    const deleteModal = document.getElementById('delete-modal');
+
+    // Init
+    const today = new Date();
+    dateInput.value = today.toISOString().split('T')[0];
+    loadLogs();
+    initMonthSelect();
+    render();
+
+    // Event Listeners
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        addRecord();
+    });
+
+    monthSelect.addEventListener('change', render);
+
+    document.getElementById('cancel-delete').addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+        deleteId = null;
+    });
+
+    document.getElementById('confirm-delete').addEventListener('click', () => {
+        if(deleteId) {
+            logs = logs.filter(l => l.id !== deleteId);
+            saveLogs();
+            render();
+            deleteModal.style.display = 'none';
+        }
+    });
+
+    // Functions
+    function addRecord() {
+        const amount = parseFloat(amountInput.value);
+        if(!amount || amount <= 0) return;
+
+        const dateVal = new Date(dateInput.value);
+        
+        const newLog = {
+            id: Date.now().toString(),
+            amount: amount,
+            date: dateVal.toISOString(),
+            month: dateVal.getMonth(),
+            year: dateVal.getFullYear()
+        };
+
+        logs.unshift(newLog);
+        saveLogs();
+        
+        // Play Sound
+        playSound();
+
+        // Reset Input
+        amountInput.value = '';
+        amountInput.focus();
+        
+        if(parseInt(monthSelect.value) !== dateVal.getMonth()) {
+            monthSelect.value = dateVal.getMonth();
+        }
+
+        // Show Green Message Below Button
+        showSuccessMessage(amount, dateVal);
+        render();
+    }
+
+    // SUBTLE SOUND FUNCTION
+    function playSound() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine'; // Sine is the softest waveform
+            
+            // Frequency: 523.25 is a "High C" note.
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+            
+            // Volume Envelope
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+            console.error("Audio play failed", e);
+        }
+    }
+
+    function showSuccessMessage(amount, date) {
+        successText.textContent = `Added ₹${amount} for ${date.toLocaleDateString()}`;
+        successMsg.style.display = 'flex';
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+    }
+
+    function render() {
+        const selectedMonth = parseInt(monthSelect.value);
+        const currentYear = new Date().getFullYear();
+
+        const filtered = logs.filter(l => l.month === selectedMonth && l.year === currentYear);
+        filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        const total = filtered.reduce((sum, item) => sum + item.amount, 0);
+        totalEl.textContent = total;
+        countEl.textContent = filtered.length;
+
+        historyList.innerHTML = '';
+        if(filtered.length === 0) {
+            emptyState.style.display = 'block';
+        } else {
+            emptyState.style.display = 'none';
+            filtered.forEach(log => {
+                const date = new Date(log.date);
+                const day = date.getDate();
+                const monthShort = date.toLocaleString('default', { month: 'short' });
+                const weekday = date.toLocaleString('default', { weekday: 'short' });
+
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="date-badge">
+                        ${day}
+                        <span>${monthShort}</span>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-amount">₹${log.amount}</div>
+                        <div class="item-weekday">${weekday}</div>
+                    </div>
+                    <button class="delete-btn" onclick="openDelete('${log.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                historyList.appendChild(item);
+            });
+        }
+    }
+
+    function initMonthSelect() {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthSelect.innerHTML = '';
+        monthNames.forEach((m, i) => {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.text = `${m} ${today.getFullYear()}`;
+            monthSelect.add(opt);
+        });
+        monthSelect.value = today.getMonth();
+    }
+
+    function loadLogs() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if(data) logs = JSON.parse(data);
+    }
+
+    function saveLogs() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+    }
+
+    window.openDelete = (id) => {
+        deleteId = id;
+        deleteModal.style.display = 'flex';
+    };
+</script>
+
+</body>
+</html>
